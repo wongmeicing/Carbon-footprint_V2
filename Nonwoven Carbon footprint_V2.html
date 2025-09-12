@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無紡布行業碳足跡計算平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2c7873;
+            --secondary-color: #6fb98f;
+            --accent-color: #f6f6f6;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+            border: none;
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, #f8f9fa, white);
+            border-bottom: 1px solid #eaeaea;
+            font-weight: 600;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #235d59;
+            border-color: #235d59;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .list-group-item {
+            border: none;
+            border-left: 4px solid transparent;
+            padding: 12px 20px;
+            font-weight: 500;
+        }
+        
+        .list-group-item.active {
+            background-color: rgba(44, 120, 115, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+        
+        .list-group-item:hover:not(.active) {
+            background-color: #f8f9fa;
+            border-left-color: #dee2e6;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .emission-badge {
+            background-color: rgba(44, 120, 115, 0.15);
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            background: white;
+            transition: transform 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .stats-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .process-pill {
+            display: inline-block;
+            background-color: #e9f5f4;
+            color: var(--primary-color);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin: 0 8px 8px 0;
+            font-weight: 500;
+        }
+        
+        .material-table th {
+            background-color: #f1f8f7;
+            color: var(--primary-color);
+        }
+        
+        .help-icon {
+            color: var(--secondary-color);
+            cursor: pointer;
+        }
+        
+        .industry-highlight {
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 15px;
+            background-color: #f9fdfc;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        #resultChart {
+            max-height: 300px;
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1580745830016-5e7cb8f63b19?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-recycle me-2"></i>無紡布碳足跡計算平台
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#helpModal">
+                    <i class="bi bi-question-circle me-1"></i>幫助
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">無紡布行業碳足跡智能計算</h1>
+            <p class="lead mb-4">精準計算、科學分析、助力無紡布行業綠色轉型</p>
+            <button class="btn btn-lg btn-light px-4 py-2 fw-bold" onclick="scrollToCalculator()">
+                開始計算 <i class="bi bi-arrow-down-circle ms-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="container my-4" id="calculator-section">
+        <div class="row">
+            <!-- 左側步驟導航 -->
+            <div class="col-md-3">
+                <div class="sidebar sticky-top">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action active" data-section="product-info">
+                            <i class="bi bi-info-circle me-2"></i>產品信息
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" data-section="production-process">
+                            <i class="bi bi-gear me-2"></i>生產工藝
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" data-section="raw-material">
+                            <i class="bi bi-box me-2"></i>原材料
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" data-section="energy">
+                            <i class="bi bi-lightning me-2"></i>能源消耗
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" data-section="water-waste">
+                            <i class="bi bi-droplet me-2"></i>水與廢棄物
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" data-section="transport">
+                            <i class="bi bi-truck me-2"></i>運輸物流
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" data-section="results">
+                            <i class="bi bi-graph-up me-2"></i>計算結果
+                        </a>
+                    </div>
+                    
+                    <div class="card-body text-center">
+                        <button id="calculateBtn" class="btn btn-primary w-100 mb-2">
+                            <i class="bi bi-calculator me-1"></i>計算碳足跡
+                        </button>
+                        <button id="resetBtn" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-arrow-clockwise me-1"></i>重置數據
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h6 class="card-title">無紡布行業特點</h6>
+                        <div class="industry-highlight mt-3">
+                            <small>無紡布生產通常採用紡粘、熔噴、水刺等工藝，能源消耗集中在熱軋、乾燥和聚合物熔融環節。</small>
+                        </div>
+                        <div class="industry-highlight mt-3">
+                            <small>主要原材料為聚丙烯(PP)、聚酯(PET)等石化產品，其碳足跡佔產品總碳足跡的較大比重。</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側內容區域 -->
+            <div class="col-md-9">
+                <!-- 產品信息 -->
+                <div class="section active" id="product-info">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">產品信息</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="productName" class="form-label">產品名稱 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="productName" placeholder="例如：PP紡粘無紡布" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="productType" class="form-label">無紡布類型 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="productType" required>
+                                        <option value="">請選擇...</option>
+                                        <option value="spunbond">紡粘無紡布</option>
+                                        <option value="meltblown">熔噴無紡布</option>
+                                        <option value="spunlace">水刺無紡布</option>
+                                        <option value="needlepunch">針刺無紡布</option>
+                                        <option value="thermalbond">熱風無紡布</option>
+                                        <option value="other">其他</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="basisWeight" class="form-label">克重 <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="basisWeight" required>
+                                        <span class="input-group-text">g/m²</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="productionVolume" class="form-label">生產量 <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="productionVolume" required>
+                                        <select class="form-select" id="productionVolumeUnit">
+                                            <option value="ton">噸</option>
+                                            <option value="kg">公斤</option>
+                                            <option value="roll">卷</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="width" class="form-label">產品寬度</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="width">
+                                        <span class="input-group-text">cm</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="application" class="form-label">最終應用</label>
+                                    <select class="form-select" id="application">
+                                        <option value="">請選擇...</option>
+                                        <option value="medical">醫用衛材</option>
+                                        <option value="filtration">過濾材料</option>
+                                        <option value="geotextile">土工布</option>
+                                        <option value="packaging">包裝材料</option>
+                                        <option value="automotive">汽車內飾</option>
+                                        <option value="other">其他</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button class="btn btn-primary next-section" data-next="production-process">
+                                    下一步 <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 生產工藝 -->
+                <div class="section" id="production-process">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">生產工藝</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">選擇您使用的無紡布生產工藝</p>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="processSpunbond">
+                                        <label class="form-check-label" for="processSpunbond">
+                                            紡粘法
+                                        </label>
+                                        <small class="text-muted d-block">聚合物擠出、拉伸、成網、加固</small>
+                                    </div>
+                                    
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="processMeltblown">
+                                        <label class="form-check-label" for="processMeltblown">
+                                            熔噴法
+                                        </label>
+                                        <small class="text-muted d-block">高溫熔融、高速氣流拉伸、超細纖維成型</small>
+                                    </div>
+                                    
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="processSpunlace">
+                                        <label class="form-check-label" for="processSpunlace">
+                                            水刺法
+                                        </label>
+                                        <small class="text-muted d-block">高壓水流纏結纖維成布</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="processNeedlepunch">
+                                        <label class="form-check-label" for="processNeedlepunch">
+                                            針刺法
+                                        </label>
+                                        <small class="text-muted d-block">刺針機械纏結纖維</small>
+                                    </div>
+                                    
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="processThermal">
+                                        <label class="form-check-label" for="processThermal">
+                                            熱風/熱軋法
+                                        </label>
+                                        <small class="text-muted d-block">熱熔粘合纖維</small>
+                                    </div>
+                                    
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="processOther">
+                                        <label class="form-check-input" for="processOther">
+                                            其他工藝
+                                        </label>
+                                        <input type="text" class="form-control form-control-sm mt-1" placeholder="請註明">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button class="btn btn-secondary prev-section me-2" data-prev="product-info">
+                                    <i class="bi bi-arrow-left"></i> 上一步
+                                </button>
+                                <button class="btn btn-primary next-section" data-next="raw-material">
+                                    下一步 <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 原材料 -->
+                <div class="section" id="raw-material">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">原材料</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">輸入產品使用的主要原材料信息</p>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-bordered material-table" id="rawMaterialTable">
+                                    <thead>
+                                        <tr>
+                                            <th>材料類型</th>
+                                            <th>比例 (%)</th>
+                                            <th>數量 (kg)</th>
+                                            <th>排放因子 <i class="bi bi-info-circle help-icon" title="每公斤材料的二氧化碳排放當量"></i></th>
+                                            <th>碳排放量</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <select class="form-select material-type">
+                                                    <option value="pp">聚丙烯 (PP)</option>
+                                                    <option value="pet">聚酯 (PET)</option>
+                                                    <option value="pe">聚乙烯 (PE)</option>
+                                                    <option value="rayon">粘膠纖維</option>
+                                                    <option value="cotton">棉花</option>
+                                                    <option value="other">其他</option>
+                                                </select>
+                                            </td>
+                                            <td><input type="number" class="form-control percentage" min="0" max="100"></td>
+                                            <td><input type="number" class="form-control quantity" min="0"></td>
+                                            <td><input type="number" class="form-control factor" min="0" value="2.5" step="0.1"></td>
+                                            <td><span class="emission-value">0</span> kg CO₂e</td>
+                                            <td><button type="button" class="btn btn-sm btn-danger remove-row"><i class="bi bi-trash"></i></button></td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="6" class="text-center">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" id="addMaterialRow">
+                                                    <i class="bi bi-plus-circle"></i> 添加材料
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr class="fw-bold">
+                                            <td colspan="4" class="text-end">原材料總碳排放:</td>
+                                            <td id="totalMaterialEmission">0 kg CO₂e</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button class="btn btn-secondary prev-section me-2" data-prev="production-process">
+                                    <i class="bi bi-arrow-left"></i> 上一步
+                                </button>
+                                <button class="btn btn-primary next-section" data-next="energy">
+                                    下一步 <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 能源消耗 -->
+                <div class="section" id="energy">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">能源消耗</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">輸入生產過程中的能源消耗數據</p>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title">電力消耗</h6>
+                                            <div class="mb-3">
+                                                <label for="electricityConsumption" class="form-label">用電量 (kWh)</label>
+                                                <input type="number" class="form-control" id="electricityConsumption" min="0">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="electricityFactor" class="form-label">排放因子 (kg CO₂e/kWh)</label>
+                                                <input type="number" class="form-control" id="electricityFactor" min="0" value="0.5" step="0.01">
+                                            </div>
+                                            <div>
+                                                <strong>碳排放: <span id="electricityEmission">0</span> kg CO₂e</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title">天然氣消耗</h6>
+                                            <div class="mb-3">
+                                                <label for="gasConsumption" class="form-label">用氣量 (m³)</label>
+                                                <input type="number" class="form-control" id="gasConsumption" min="0">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="gasFactor" class="form-label">排放因子 (kg CO₂e/m³)</label>
+                                                <input type="number" class="form-control" id="gasFactor" min="0" value="2.0" step="0.1">
+                                            </div>
+                                            <div>
+                                                <strong>碳排放: <span id="gasEmission">0</span> kg CO₂e</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title">其他能源</h6>
+                                            <div class="mb-3">
+                                                <label for="otherEnergyType" class="form-label">能源類型</label>
+                                                <input type="text" class="form-control" id="otherEnergyType" placeholder="例如：蒸汽、煤炭等">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="otherEnergyConsumption" class="form-label">消耗量</label>
+                                                <input type="number" class="form-control" id="otherEnergyConsumption" min="0">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="otherEnergyFactor" class="form-label">排放因子 (kg CO₂e/單位)</label>
+                                                <input type="number" class="form-control" id="otherEnergyFactor" min="0" step="0.1">
+                                            </div>
+                                            <div>
+                                                <strong>碳排放: <span id="otherEnergyEmission">0</span> kg CO₂e</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card bg-light h-100">
+                                        <div class="card-body d-flex flex-column justify-content-center">
+                                            <h6 class="card-title text-center">能源總碳排放</h6>
+                                            <div class="text-center">
+                                                <div class="stats-value" id="totalEnergyEmission">0</div>
+                                                <div class="stats-label">kg CO₂e</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button class="btn btn-secondary prev-section me-2" data-prev="raw-material">
+                                    <i class="bi bi-arrow-left"></i> 上一步
+                                </button>
+                                <button class="btn btn-primary next-section" data-next="water-waste">
+                                    下一步 <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 水與廢棄物 -->
+                <div class="section" id="water-waste">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">水與廢棄物</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">輸入水資源消耗和廢棄物處理相關數據</p>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title">水資源消耗</h6>
+                                            <div class="mb-3">
+                                                <label for="waterConsumption" class="form-label">用水量 (m³)</label>
+                                                <input type="number" class="form-control" id="waterConsumption" min="0">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="waterFactor" class="form-label">水處理排放因子 (kg CO₂e/m³)</label>
+                                                <input type="number" class="form-control" id="waterFactor" min="0" value="0.3" step="0.01">
+                                            </div>
+                                            <div>
+                                                <strong>碳排放: <span id="waterEmission">0</span> kg CO₂e</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title">廢水處理</h6>
+                                            <div class="mb-3">
+                                                <label for="wastewaterVolume" class="form-label">廢水產生量 (m³)</label>
+                                                <input type="number" class="form-control" id="wastewaterVolume" min="0">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="wastewaterFactor" class="form-label">廢水處理排放因子 (kg CO₂e/m³)</label>
+                                                <input type="number" class="form-control" id="wastewaterFactor" min="0" value="0.8" step="0.05">
+                                            </div>
+                                            <div>
+                                                <strong>碳排放: <span id="wastewaterEmission">0</span> kg CO₂e</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title">固體廢棄物</h6>
+                                            <div class="mb-3">
+                                                <label for="solidWaste" class="form-label">固廢產生量 (kg)</label>
+                                                <input type="number" class="form-control" id="solidWaste" min="0">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="solidWasteFactor" class="form-label">固廢處理排放因子 (kg CO₂e/kg)</label>
+                                                <input type="number" class="form-control" id="solidWasteFactor" min="0" value="0.5" step="0.05">
+                                            </div>
+                                            <div>
+                                                <strong>碳排放: <span id="solidWasteEmission">0</span> kg CO₂e</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card bg-light h-100">
+                                        <div class="card-body d-flex flex-column justify-content-center">
+                                            <h6 class="card-title text-center">水與廢棄物總碳排放</h6>
+                                            <div class="text-center">
+                                                <div class="stats-value" id="totalWaterWasteEmission">0</div>
+                                                <div class="stats-label">kg CO₂e</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button class="btn btn-secondary prev-section me-2" data-prev="energy">
+                                    <i class="bi bi-arrow-left"></i> 上一步
+                                </button>
+                                <button class="btn btn-primary next-section" data-next="transport">
+                                    下一步 <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 運輸物流 -->
+                <div class="section" id="transport">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">運輸物流</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">輸入原材料和產品運輸相關數據</p>
+                            
+                            <div class="mb-4">
+                                <h6 class="mb-3">原材料運輸</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="materialTransportTable">
+                                        <thead>
+                                            <tr>
+                                                <th>材料類型</th>
+                                                <th>運輸距離 (km)</th>
+                                                <th>運輸方式</th>
+                                                <th>排放因子 <i class="bi bi-info-circle help-icon" title="每噸公里二氧化碳排放當量"></i></th>
+                                                <th>碳排放量</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <select class="form-select">
+                                                        <option value="pp">聚丙烯 (PP)</option>
+                                                        <option value="pet">聚酯 (PET)</option>
+                                                        <option value="other">其他材料</option>
+                                                    </select>
+                                                </td>
+                                                <td><input type="number" class="form-control" min="0"></td>
+                                                <td>
+                                                    <select class="form-select transport-mode">
+                                                        <option value="truck">卡車</option>
+                                                        <option value="ship">船舶</option>
+                                                        <option value="rail">鐵路</option>
+                                                        <option value="air">空運</option>
+                                                    </select>
+                                                </td>
+                                                <td><input type="number" class="form-control factor" min="0" value="0.15"></td>
+                                                <td><span class="emission-value">0</span> kg CO₂e</td>
+                                                <td><button type="button" class="btn btn-sm btn-danger remove-row"><i class="bi bi-trash"></i></button></td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="6" class="text-center">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" id="addMaterialTransportRow">
+                                                        <i class="bi bi-plus-circle"></i> 添加運輸路線
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h6 class="mb-3">產品運輸</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="productTransportDistance" class="form-label">平均運輸距離 (km)</label>
+                                            <input type="number" class="form-control" id="productTransportDistance" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="productTransportMode" class="form-label">主要運輸方式</label>
+                                            <select class="form-select" id="productTransportMode">
+                                                <option value="truck">卡車</option>
+                                                <option value="ship">船舶</option>
+                                                <option value="rail">鐵路</option>
+                                                <option value="air">空運</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="productTransportFactor" class="form-label">排放因子 (kg CO₂e/噸公里)</label>
+                                            <input type="number" class="form-control" id="productTransportFactor" min="0" value="0.15" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">產品運輸碳排放</label>
+                                            <div>
+                                                <strong id="productTransportEmission">0 kg CO₂e</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card bg-light mb-4">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>原材料運輸總碳排放</h6>
+                                            <div class="stats-value" id="totalMaterialTransportEmission">0</div>
+                                            <div class="stats-label">kg CO₂e</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>運輸總碳排放</h6>
+                                            <div class="stats-value" id="totalTransportEmission">0</div>
+                                            <div class="stats-label">kg CO₂e</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button class="btn btn-secondary prev-section me-2" data-prev="water-waste">
+                                    <i class="bi bi-arrow-left"></i> 上一步
+                                </button>
+                                <button class="btn btn-primary next-section" data-next="results">
+                                    查看結果 <i class="bi bi-graph-up"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 計算結果 -->
+                <div class="section" id="results">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">碳足跡計算結果</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="stats-card">
+                                        <div class="stats-label">總碳排放量</div>
+                                        <div class="stats-value" id="totalEmissionResult">0</div>
+                                        <div class="stats-label">kg CO₂e</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stats-card">
+                                        <div class="stats-label">單位產品碳排放</div>
+                                        <div class="stats-value" id="unitEmissionResult">0</div>
+                                        <div class="stats-label">kg CO₂e/kg</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stats-card">
+                                        <div class="stats-label">碳排放強度</div>
+                                        <div class="stats-value" id="intensityResult">0</div>
+                                        <div class="stats-label">kg CO₂e/m²</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">碳排放分佈</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="resultChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">碳足跡分析</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="emissionBreakdown">
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>原材料:</span>
+                                                    <span id="materialBreakdown">0 kg CO₂e (0%)</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>能源消耗:</span>
+                                                    <span id="energyBreakdown">0 kg CO₂e (0%)</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>水與廢棄物:</span>
+                                                    <span id="waterWasteBreakdown">0 kg CO₂e (0%)</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>運輸物流:</span>
+                                                    <span id="transportBreakdown">0 kg CO₂e (0%)</span>
+                                                </div>
+                                                <hr>
+                                                <div class="d-flex justify-content-between fw-bold">
+                                                    <span>總計:</span>
+                                                    <span id="totalBreakdown">0 kg CO₂e</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mt-4">
+                                                <h6>減排建議</h6>
+                                                <ul class="list-group list-group-flush" id="recommendations">
+                                                    <li class="list-group-item">使用可再生或回收原材料</li>
+                                                    <li class="list-group-item">優化生產工藝降低能源消耗</li>
+                                                    <li class="list-group-item">提高設備能源效率</li>
+                                                    <li class="list-group-item">考慮使用清潔能源</li>
+                                                    <li class="list-group-item">優化物流路線和運輸方式</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button class="btn btn-primary me-2" id="downloadReport">
+                                    <i class="bi bi-download me-1"></i> 下載報告
+                                </button>
+                                <button class="btn btn-outline-secondary" id="startOver">
+                                    <i class="bi bi-arrow-repeat me-1"></i> 重新計算
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 幫助模態框 -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">無紡布碳足跡計算幫助</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>什麼是產品碳足跡？</h6>
+                    <p>產品碳足跡（Carbon Footprint）是指產品在整個生命週期內所直接和間接產生的溫室氣體排放總量，以二氧化碳當量（CO₂e）表示。</p>
+                    
+                    <h6>無紡布碳足跡計算範圍</h6>
+                    <p>本計算器涵蓋從原材料獲取、生產加工到產品運輸的碳足跡計算，包括：</p>
+                    <ul>
+                        <li>原材料生產和運輸</li>
+                        <li>無紡布生產過程中的能源消耗</li>
+                        <li>生產過程中的水資源消耗和廢棄物處理</li>
+                        <li>成品運輸到客戶的物流排放</li>
+                    </ul>
+                    
+                    <h6>數據輸入指南</h6>
+                    <p>請盡可能提供準確的生產數據，包括：</p>
+                    <ul>
+                        <li>原材料類型和用量</li>
+                        <li>生產過程中的電、氣等能源消耗</li>
+                        <li>水資源消耗和廢棄物產生量</li>
+                        <li>運輸距離和方式</li>
+                    </ul>
+                    
+                    <p class="mt-3">如需更多幫助，請聯繫我們: support@carbonfootprint.com</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>無紡布碳足跡計算平台</h5>
+                    <p>助力無紡布行業綠色轉型與可持續發展</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p>© 2025 碳足跡計算平台. 保留所有權利。</p>
+                    <p>聯繫我們: contact@carbonfootprint.com</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 頁面導航功能
+        document.querySelectorAll('.list-group-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetSection = this.getAttribute('data-section');
+                
+                // 更新導航狀態
+                document.querySelectorAll('.list-group-item').forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 顯示對應部分
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(targetSection).classList.add('active');
+            });
+        });
+
+        // 下一步/上一步按鈕功能
+        document.querySelectorAll('.next-section').forEach(button => {
+            button.addEventListener('click', function() {
+                const nextSection = this.getAttribute('data-next');
+                
+                // 更新導航狀態
+                document.querySelectorAll('.list-group-item').forEach(navItem => {
+                    navItem.classList.remove('active');
+                    if(navItem.getAttribute('data-section') === nextSection) {
+                        navItem.classList.add('active');
+                    }
+                });
+                
+                // 顯示對應部分
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(nextSection).classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.prev-section').forEach(button => {
+            button.addEventListener('click', function() {
+                const prevSection = this.getAttribute('data-prev');
+                
+                // 更新導航狀態
+                document.querySelectorAll('.list-group-item').forEach(navItem => {
+                    navItem.classList.remove('active');
+                    if(navItem.getAttribute('data-section') === prevSection) {
+                        navItem.classList.add('active');
+                    }
+                });
+                
+                // 顯示對應部分
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(prevSection).classList.add('active');
+            });
+        });
+
+        // 滾動到計算器部分
+        function scrollToCalculator() {
+            document.getElementById('calculator-section').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        // 初始化頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 設置默認激活的部分
+            document.getElementById('product-info').classList.add('active');
+            
+            // 添加材料行
+            document.getElementById('addMaterialRow').addEventListener('click', function() {
+                const tbody = document.querySelector('#rawMaterialTable tbody');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>
+                        <select class="form-select material-type">
+                            <option value="pp">聚丙烯 (PP)</option>
+                            <option value="pet">聚酯 (PET)</option>
+                            <option value="pe">聚乙烯 (PE)</option>
+                            <option value="rayon">粘膠纖維</option>
+                            <option value="cotton">棉花</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control percentage" min="0" max="100"></td>
+                    <td><input type="number" class="form-control quantity" min="0"></td>
+                    <td><input type="number" class="form-control factor" min="0" value="2.5" step="0.1"></td>
+                    <td><span class="emission-value">0</span> kg CO₂e</td>
+                    <td><button type="button" class="btn btn-sm btn-danger remove-row"><i class="bi bi-trash"></i></button></td>
+                `;
+                tbody.appendChild(newRow);
+                
+                // 添加刪除行功能
+                newRow.querySelector('.remove-row').addEventListener('click', function() {
+                    this.closest('tr').remove();
+                    calculateMaterialEmissions();
+                });
+                
+                // 添加計算功能
+                const inputs = newRow.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', calculateMaterialEmissions);
+                });
+            });
+            
+            // 添加材料運輸行
+            document.getElementById('addMaterialTransportRow').addEventListener('click', function() {
+                const tbody = document.querySelector('#materialTransportTable tbody');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>
+                        <select class="form-select">
+                            <option value="pp">聚丙烯 (PP)</option>
+                            <option value="pet">聚酯 (PET)</option>
+                            <option value="other">其他材料</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control" min="0"></td>
+                    <td>
+                        <select class="form-select transport-mode">
+                            <option value="truck">卡車</option>
+                            <option value="ship">船舶</option>
+                            <option value="rail">鐵路</option>
+                            <option value="air">空運</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control factor" min="0" value="0.15"></td>
+                    <td><span class="emission-value">0</span> kg CO₂e</td>
+                    <td><button type="button" class="btn btn-sm btn-danger remove-row"><i class="bi bi-trash"></i></button></td>
+                `;
+                tbody.appendChild(newRow);
+                
+                // 添加刪除行功能
+                newRow.querySelector('.remove-row').addEventListener('click', function() {
+                    this.closest('tr').remove();
+                    calculateTransportEmissions();
+                });
+                
+                // 添加計算功能
+                const inputs = newRow.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', calculateTransportEmissions);
+                });
+                
+                const selects = newRow.querySelectorAll('select');
+                selects.forEach(select => {
+                    select.addEventListener('change', calculateTransportEmissions);
+                });
+            });
+            
+            // 初始化刪除行功能
+            document.querySelectorAll('.remove-row').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('tr').remove();
+                });
+            });
+            
+            // 綁定計算功能到輸入字段
+            document.getElementById('electricityConsumption').addEventListener('input', calculateEnergyEmissions);
+            document.getElementById('electricityFactor').addEventListener('input', calculateEnergyEmissions);
+            document.getElementById('gasConsumption').addEventListener('input', calculateEnergyEmissions);
+            document.getElementById('gasFactor').addEventListener('input', calculateEnergyEmissions);
+            document.getElementById('otherEnergyConsumption').addEventListener('input', calculateEnergyEmissions);
+            document.getElementById('otherEnergyFactor').addEventListener('input', calculateEnergyEmissions);
+            
+            document.getElementById('waterConsumption').addEventListener('input', calculateWaterWasteEmissions);
+            document.getElementById('waterFactor').addEventListener('input', calculateWaterWasteEmissions);
+            document.getElementById('wastewaterVolume').addEventListener('input', calculateWaterWasteEmissions);
+            document.getElementById('wastewaterFactor').addEventListener('input', calculateWaterWasteEmissions);
+            document.getElementById('solidWaste').addEventListener('input', calculateWaterWasteEmissions);
+            document.getElementById('solidWasteFactor').addEventListener('input', calculateWaterWasteEmissions);
+            
+            document.getElementById('productTransportDistance').addEventListener('input', calculateTransportEmissions);
+            document.getElementById('productTransportFactor').addEventListener('input', calculateTransportEmissions);
+            document.getElementById('productTransportMode').addEventListener('change', calculateTransportEmissions);
+            
+            // 綁定材料計算
+            document.querySelectorAll('#rawMaterialTable input').forEach(input => {
+                input.addEventListener('input', calculateMaterialEmissions);
+            });
+            
+            // 綁定運輸計算
+            document.querySelectorAll('#materialTransportTable input, #materialTransportTable select').forEach(element => {
+                element.addEventListener('input', calculateTransportEmissions);
+                element.addEventListener('change', calculateTransportEmissions);
+            });
+            
+            // 計算按鈕
+            document.getElementById('calculateBtn').addEventListener('click', calculateAll);
+            
+            // 重置按鈕
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                if(confirm('確定要重置所有數據嗎？')) {
+                    document.querySelectorAll('input').forEach(input => {
+                        input.value = '';
+                    });
+                    document.querySelectorAll('select').forEach(select => {
+                        select.selectedIndex = 0;
+                    });
+                    
+                    // 重置結果
+                    document.querySelectorAll('.emission-value').forEach(span => {
+                        span.textContent = '0';
+                    });
+                    
+                    document.getElementById('totalMaterialEmission').textContent = '0 kg CO₂e';
+                    document.getElementById('totalEnergyEmission').textContent = '0';
+                    document.getElementById('totalWaterWasteEmission').textContent = '0';
+                    document.getElementById('totalTransportEmission').textContent = '0';
+                    
+                    // 返回第一頁
+                    document.querySelectorAll('.list-group-item').forEach(navItem => {
+                        navItem.classList.remove('active');
+                    });
+                    document.querySelector('[data-section="product-info"]').classList.add('active');
+                    
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.getElementById('product-info').classList.add('active');
+                }
+            });
+            
+            // 重新開始按鈕
+            document.getElementById('startOver').addEventListener('click', function() {
+                document.querySelectorAll('.list-group-item').forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
+                document.querySelector('[data-section="product-info"]').classList.add('active');
+                
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById('product-info').classList.add('active');
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+        
+        // 計算材料碳排放
+        function calculateMaterialEmissions() {
+            let totalEmission = 0;
+            
+            document.querySelectorAll('#rawMaterialTable tbody tr').forEach(row => {
+                const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+                const factor = parseFloat(row.querySelector('.factor').value) || 0;
+                const emission = quantity * factor;
+                
+                row.querySelector('.emission-value').textContent = emission.toFixed(2);
+                totalEmission += emission;
+            });
+            
+            document.getElementById('totalMaterialEmission').textContent = totalEmission.toFixed(2) + ' kg CO₂e';
+            return totalEmission;
+        }
+        
+        // 計算能源碳排放
+        function calculateEnergyEmissions() {
+            const electricityConsumption = parseFloat(document.getElementById('electricityConsumption').value) || 0;
+            const electricityFactor = parseFloat(document.getElementById('electricityFactor').value) || 0;
+            const electricityEmission = electricityConsumption * electricityFactor;
+            document.getElementById('electricityEmission').textContent = electricityEmission.toFixed(2);
+            
+            const gasConsumption = parseFloat(document.getElementById('gasConsumption').value) || 0;
+            const gasFactor = parseFloat(document.getElementById('gasFactor').value) || 0;
+            const gasEmission = gasConsumption * gasFactor;
+            document.getElementById('gasEmission').textContent = gasEmission.toFixed(2);
+            
+            const otherEnergyConsumption = parseFloat(document.getElementById('otherEnergyConsumption').value) || 0;
+            const otherEnergyFactor = parseFloat(document.getElementById('otherEnergyFactor').value) || 0;
+            const otherEnergyEmission = otherEnergyConsumption * otherEnergyFactor;
+            document.getElementById('otherEnergyEmission').textContent = otherEnergyEmission.toFixed(2);
+            
+            const totalEnergyEmission = electricityEmission + gasEmission + otherEnergyEmission;
+            document.getElementById('totalEnergyEmission').textContent = totalEnergyEmission.toFixed(2);
+            
+            return totalEnergyEmission;
+        }
+        
+        // 計算水與廢棄物碳排放
+        function calculateWaterWasteEmissions() {
+            const waterConsumption = parseFloat(document.getElementById('waterConsumption').value) || 0;
+            const waterFactor = parseFloat(document.getElementById('waterFactor').value) || 0;
+            const waterEmission = waterConsumption * waterFactor;
+            document.getElementById('waterEmission').textContent = waterEmission.toFixed(2);
+            
+            const wastewaterVolume = parseFloat(document.getElementById('wastewaterVolume').value) || 0;
+            const wastewaterFactor = parseFloat(document.getElementById('wastewaterFactor').value) || 0;
+            const wastewaterEmission = wastewaterVolume * wastewaterFactor;
+            document.getElementById('wastewaterEmission').textContent = wastewaterEmission.toFixed(2);
+            
+            const solidWaste = parseFloat(document.getElementById('solidWaste').value) || 0;
+            const solidWasteFactor = parseFloat(document.getElementById('solidWasteFactor').value) || 0;
+            const solidWasteEmission = solidWaste * solidWasteFactor;
+            document.getElementById('solidWasteEmission').textContent = solidWasteEmission.toFixed(2);
+            
+            const totalWaterWasteEmission = waterEmission + wastewaterEmission + solidWasteEmission;
+            document.getElementById('totalWaterWasteEmission').textContent = totalWaterWasteEmission.toFixed(2);
+            
+            return totalWaterWasteEmission;
+        }
+        
+        // 計算運輸碳排放
+        function calculateTransportEmissions() {
+            let materialTransportEmission = 0;
+            
+            // 計算原材料運輸排放
+            document.querySelectorAll('#materialTransportTable tbody tr').forEach(row => {
+                const distance = parseFloat(row.querySelector('td:nth-child(2) input').value) || 0;
+                const factor = parseFloat(row.querySelector('.factor').value) || 0;
+                // 假設每種材料運輸量為1000kg（1噸）進行計算
+                const emission = distance * factor * 1; // 1噸
+                
+                row.querySelector('.emission-value').textContent = emission.toFixed(2);
+                materialTransportEmission += emission;
+            });
+            
+            document.getElementById('totalMaterialTransportEmission').textContent = materialTransportEmission.toFixed(2);
+            
+            // 計算產品運輸排放
+            const productDistance = parseFloat(document.getElementById('productTransportDistance').value) || 0;
+            const productFactor = parseFloat(document.getElementById('productTransportFactor').value) || 0;
+            // 假設產品重量為1000kg（1噸）進行計算
+            const productTransportEmission = productDistance * productFactor * 1; // 1噸
+            
+            document.getElementById('productTransportEmission').textContent = productTransportEmission.toFixed(2) + ' kg CO₂e';
+            
+            const totalTransportEmission = materialTransportEmission + productTransportEmission;
+            document.getElementById('totalTransportEmission').textContent = totalTransportEmission.toFixed(2);
+            
+            return totalTransportEmission;
+        }
+        
+        // 計算總碳排放
+        function calculateAll() {
+            // 計算各部分排放
+            const materialEmission = calculateMaterialEmissions();
+            const energyEmission = calculateEnergyEmissions();
+            const waterWasteEmission = calculateWaterWasteEmissions();
+            const transportEmission = calculateTransportEmissions();
+            
+            // 計算總排放
+            const totalEmission = materialEmission + energyEmission + waterWasteEmission + transportEmission;
+            
+            // 顯示總排放結果
+            document.getElementById('totalEmissionResult').textContent = totalEmission.toFixed(2);
+            
+            // 計算單位產品排放（假設生產量為1000kg）
+            const productionVolume = 1000; // 假設為1000kg
+            const unitEmission = totalEmission / productionVolume;
+            document.getElementById('unitEmissionResult').textContent = unitEmission.toFixed(2);
+            
+            // 計算碳排放強度（假設產品面積為1000m²）
+            const productArea = 1000; // 假設為1000m²
+            const intensityEmission = totalEmission / productArea;
+            document.getElementById('intensityResult').textContent = intensityEmission.toFixed(2);
+            
+            // 計算各部分的百分比
+            const materialPercent = (materialEmission / totalEmission * 100).toFixed(1);
+            const energyPercent = (energyEmission / totalEmission * 100).toFixed(1);
+            const waterWastePercent = (waterWasteEmission / totalEmission * 100).toFixed(1);
+            const transportPercent = (transportEmission / totalEmission * 100).toFixed(1);
+            
+            // 更新排放細分
+            document.getElementById('materialBreakdown').textContent = `${materialEmission.toFixed(2)} kg CO₂e (${materialPercent}%)`;
+            document.getElementById('energyBreakdown').textContent = `${energyEmission.toFixed(2)} kg CO₂e (${energyPercent}%)`;
+            document.getElementById('waterWasteBreakdown').textContent = `${waterWasteEmission.toFixed(2)} kg CO₂e (${waterWastePercent}%)`;
+            document.getElementById('transportBreakdown').textContent = `${transportEmission.toFixed(2)} kg CO₂e (${transportPercent}%)`;
+            document.getElementById('totalBreakdown').textContent = `${totalEmission.toFixed(2)} kg CO₂e`;
+            
+            // 繪製圖表
+            const ctx = document.getElementById('resultChart').getContext('2d');
+            if(window.resultChartInstance) {
+                window.resultChartInstance.destroy();
+            }
+            window.resultChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['原材料', '能源消耗', '水與廢棄物', '運輸物流'],
+                    datasets: [{
+                        data: [materialEmission, energyEmission, waterWasteEmission, transportEmission],
+                        backgroundColor: [
+                            '#2c7873',
+                            '#6fb98f',
+                            '#a3de83',
+                            '#f6f6f6'
+                        ],
+                        borderColor: [
+                            '#235d59',
+                            '#5a946f',
+                            '#8bb872',
+                            '#dddddd'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value.toFixed(2)} kg CO₂e (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 跳轉到結果頁面
+            document.querySelectorAll('.list-group-item').forEach(navItem => {
+                navItem.classList.remove('active');
+            });
+            document.querySelector('[data-section="results"]').classList.add('active');
+            
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('results').classList.add('active');
+        }
+    </script>
+</body>
+</html>
